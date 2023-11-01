@@ -1,3 +1,3 @@
 # Cav-s-Boardgames
-Joshua Rummell has edited the read me. Josh repo works
+Joshua Rummell has edited the read me. 
 Nicholus Campbell has edited the read me.
