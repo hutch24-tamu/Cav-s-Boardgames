@@ -20,3 +20,9 @@
 # output top 10 games we’d think they like
 #   pretty print a list
 #   let user let us know if they’ve played any of them and their ratings?
+
+def main():
+    pass
+
+if __name__ == "__main__":
+    main()
