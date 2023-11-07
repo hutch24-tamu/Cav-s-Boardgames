@@ -24,5 +24,6 @@
 def main():
     pass
 
+'Standard python convention to have this'
 if __name__ == "__main__":
     main()
