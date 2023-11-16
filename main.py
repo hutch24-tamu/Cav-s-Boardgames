@@ -6,6 +6,16 @@
 #   Their group rating of the board game
 #       int input range bound from 1-10 
 
+def searchForGame(gameTitle):
+    # call the api search function on gameTitle
+    # get a list of game id's returned probably
+    # loop through those games 
+    #   add to possibleGames list if not an expansion
+    #   ignore otherwise
+    # display possibleGames to user as a numbered list format
+    # take user input - 1 bc zero index
+    # return game selected by user
+
 # Black Box Recommending
 # gonna recommend games with similar factors for games user rating highly
 # factors: 
