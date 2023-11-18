@@ -49,19 +49,25 @@ def searchForGame(gameTitle):
 def main():
     all_userboardgames = []
     all_userratings = []
-    input_game = ""
+    input_game = None
     game_rating = None
     done_notification = False
     print("Welcome to Cav's boardgames! You are now entering the Hypersphere of Trust, please share some boardgames your group has played and a rating 1-10 for each.")
     while True:
+        input_game = None
         game_rating = None
         if len(all_userboardgames) > 2 and done_notification==False:
             print("Thank you for your input! You may enter Done to finish your list")
             done_notification=True
-        input_game=input("Boardgame: ")
+        while input_game is None: #ensures user does not a duplicate board game
+            input_game=input("Boardgame: ")
+        #   input_game = searchForGame(input_game) #will need to implement searchForGame
+            for game in all_userboardgames:
+                if game==input_game:
+                    print("This boardgame is already recorded on our list. Please provide a different game.")
+                    input_game = None
         if input_game == "Done":
             break
-      #  input_game = searchForGame(input_game) #will need to implement searchForGame
         while game_rating is None: #ensures the user gives a numerical value between 1 and 10
             try:
                 game_rating=float(input("Group Rating: "))
