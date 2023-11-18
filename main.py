@@ -1,4 +1,4 @@
-# Pseudo code/Planning
+ # Pseudo code/Planning
 
 # Get user input of games they’ve played, ask for at least 3 maybe
 # while they want to enter more data, let them enter
@@ -11,7 +11,7 @@ def searchForGame(gameTitle):
     # get a list of game id's returned probably
     searchedGames = [] #change for api call instead
     # loop through those games 
-    #   add to possibleGames list if not an expansion
+    #   add to possibleGames list if NOT an expansion
     #   ignore otherwise
     possibleGames = []
     for game in searchedGames:
@@ -47,7 +47,34 @@ def searchForGame(gameTitle):
 #   let user let us know if they’ve played any of them and their ratings?
 
 def main():
-    pass
+    all_userboardgames = []
+    all_userratings = []
+    input_game = ""
+    game_rating = None
+    done_notification = False
+    print("Welcome to Cav's boardgames! You are now entering the Hypersphere of Trust, please share some boardgames your group has played and a rating 1-10 for each.")
+    while True:
+        game_rating = None
+        if len(all_userboardgames) > 2 and done_notification==False:
+            print("Thank you for your input! You may enter Done to finish your list")
+            done_notification=True
+        input_game=input("Boardgame: ")
+        if input_game == "Done":
+            break
+      #  input_game = searchForGame(input_game) #will need to implement searchForGame
+        all_userboardgames.append(input_game)
+        while game_rating is None: #ensures the user gives a numerical value between 1 and 10
+            try:
+                game_rating=float(input("Group Rating: "))
+                if game_rating > 10 or game_rating < 1:
+                    while game_rating > 10 or game_rating < 1:
+                        print("Please provide a valid rating between 1-10")
+                        game_rating=float(input("Group Rating: "))
+            except ValueError:
+                print("Please provide a valid rating between 1-10")
+        all_userratings.append(game_rating)
+    print(all_userboardgames)
+    print(all_userratings)
 
 'Standard python convention to have this'
 if __name__ == "__main__":
