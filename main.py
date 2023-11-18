@@ -62,16 +62,16 @@ def main():
         if input_game == "Done":
             break
       #  input_game = searchForGame(input_game) #will need to implement searchForGame
-        all_userboardgames.append(input_game)
         while game_rating is None: #ensures the user gives a numerical value between 1 and 10
             try:
                 game_rating=float(input("Group Rating: "))
-                if game_rating > 10 or game_rating < 1:
-                    while game_rating > 10 or game_rating < 1:
-                        print("Please provide a valid rating between 1-10")
-                        game_rating=float(input("Group Rating: "))
+                while game_rating > 10 or game_rating < 1:
+                    print("Please provide a valid rating between 1-10")
+                    game_rating=float(input("Group Rating: "))
             except ValueError:
                 print("Please provide a valid rating between 1-10")
+                game_rating = None
+        all_userboardgames.append(input_game)
         all_userratings.append(game_rating)
     print(all_userboardgames)
     print(all_userratings)
