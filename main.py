@@ -46,7 +46,7 @@ def searchForGame(gameTitle):
 #   pretty print a list
 #   let user let us know if they’ve played any of them and their ratings?
 
-def main():
+def userPrompting():
     all_userboardgames = []
     all_userratings = []
     input_game = None
@@ -59,7 +59,7 @@ def main():
         if len(all_userboardgames) > 2 and done_notification==False:
             print("Thank you for your input! You may enter Done to finish your list")
             done_notification=True
-        while input_game is None: #ensures user does not a duplicate board game
+        while input_game is None: #ensures user does not enter a duplicate board game
             input_game=input("Boardgame: ")
         #   input_game = searchForGame(input_game) #will need to implement searchForGame
             for game in all_userboardgames:
@@ -81,6 +81,10 @@ def main():
         all_userratings.append(game_rating)
     print(all_userboardgames)
     print(all_userratings)
+    return 0
+
+def main():
+    userPrompting()
 
 'Standard python convention to have this'
 if __name__ == "__main__":
