@@ -1,9 +1,9 @@
 import requests as r
 from bs4 import BeautifulSoup
 # GLOBALS
-NumberOfBoardgamesToSearch = 50
+NumberOfBoardgamesToSearch = 4
 
-# Pseudo code/Planning
+# Pseudo code/Planning 
 
 # Get user input of games they’ve played, ask for at least 3 maybe
 # while they want to enter more data, let them enter
@@ -14,49 +14,48 @@ NumberOfBoardgamesToSearch = 50
 def searchForGame(gameTitle):
     # call the api search function on gameTitle
     # get a list of game id's returned probably
-    searchedGames = []
+    # searchedGames = []
+    possibleGames = []
     gamesSearch = BeautifulSoup(r.get(f'https://boardgamegeek.com/xmlapi/search?search={gameTitle}').content, 'xml')
-    # print(gamesSearch)
     gameIDs = ""
+    i=0    
     for game in gamesSearch.find_all('boardgame'):
         # print(game)
         gameID = game['objectid']
         gameIDs += gameID + ","
         gameName = game.text.strip().split('\n')[0]
-        searchedGames.append((gameID, gameName))
-        if len(searchedGames) > NumberOfBoardgamesToSearch:
-            print("Please be more specific with your game title.")
-            return ["Error"]
-    # loop through those games 
-    #   add to possibleGames list if NOT an expansion
-    #   ignore otherwise
-    # print(searchedGames, '\n\n')
-    
-    print(gameIDs)
-    gamesInformation = BeautifulSoup(r.get(f'https://boardgamegeek.com/xmlapi/boardgame/{gameIDs}').content, 'xml')
-    possibleGames = []
-    for index, contents in enumerate(gamesInformation.find_all('boardgame')):
-        boardgameCategories = contents.find_all('boardgamecategory')
+        # searchedGames.append((gameID, gameName))
+        gameInformation = BeautifulSoup(r.get(f'https://boardgamegeek.com/xmlapi/boardgame/{gameID}').content, 'xml')
+        boardgameCategories = gameInformation.find_all('boardgamecategory')
         isExpansion = False
         for category in boardgameCategories:
             if category['objectid'] == '1042':
                 # print("expansion!")
                 isExpansion = True
-        # print(game)
-        boardgameVersion = contents.find_all('boardgameversion')
+        boardgameVersion = gameInformation.find_all('boardgameversion')
         isEnglish = False
         for category in boardgameVersion:
             if 'English' in category.text:
                 # print("english!")
                 isEnglish = True
         if isEnglish and not isExpansion:
-            print(index)
-            possibleGames.append(searchedGames[index])
-    print(possibleGames)
+            print(f"{i+1}: {gameName}")
+            i += 1
+            possibleGames.append((gameID, gameName))
+        if len(possibleGames) > NumberOfBoardgamesToSearch:
+            print("Only the first 5 games have been listed. \nPlease be more specific with your game title.")
+            break
+    # loop through those games 
+    #   add to possibleGames list if NOT an expansion
+    #   ignore otherwise
+    # print(searchedGames, '\n\n')
+    
+    # print(gameIDs)
+    # print(possibleGames)
     # display possibleGames to user as a numbered list format
     if len(possibleGames) > 1:
-        for i, game in enumerate(possibleGames):
-            print(f"{i+1}: {game[1]}")
+        # for i, game in enumerate(possibleGames):
+        #     print(f"{i+1}: {game[1]}")
         # take user input - 1 bc zero index
         userSelection = int(input("Select with game you meant by inputing it's number: ")) - 1
         while userSelection < 0 or userSelection > len(possibleGames) - 1:
