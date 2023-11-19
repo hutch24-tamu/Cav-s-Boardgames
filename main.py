@@ -1,5 +1,4 @@
 import requests as r
-import xmltodict
 from bs4 import BeautifulSoup
 # Pseudo code/Planning
 
@@ -58,8 +57,6 @@ def searchForGame(gameTitle):
     else:
         return possibleGames[0]
 
-print(searchForGame("spirit island"))
-
 # Black Box Recommending
 # gonna recommend games with similar factors for games user rating highly
 # factors: 
@@ -85,12 +82,12 @@ def userPrompting():
     while True:
         input_game = None
         game_rating = None
-        if len(all_userboardgames) > 2 and done_notification==False:
+        if len(all_userboardgames) > 2 and not done_notification:
             print("Thank you for your input! You may enter Done to finish your list")
             done_notification=True
         while input_game is None: #ensures user does not enter a duplicate board game
             input_game=input("Boardgame: ")
-        #   input_game = searchForGame(input_game) #will need to implement searchForGame
+            input_game=searchForGame(input_game)[0] #will need to implement searchForGame
             for game in all_userboardgames:
                 if game==input_game:
                     print("This boardgame is already recorded on our list. Please provide a different game.")
