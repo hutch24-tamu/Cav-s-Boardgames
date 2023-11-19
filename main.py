@@ -1,5 +1,8 @@
 import requests as r
 from bs4 import BeautifulSoup
+# GLOBALS
+NumberOfBoardgamesToSearch = 50
+
 # Pseudo code/Planning
 
 # Get user input of games they’ve played, ask for at least 3 maybe
@@ -21,6 +24,9 @@ def searchForGame(gameTitle):
         gameIDs += gameID + ","
         gameName = game.text.strip().split('\n')[0]
         searchedGames.append((gameID, gameName))
+        if len(searchedGames) > NumberOfBoardgamesToSearch:
+            print("Please be more specific with your game title.")
+            return ["Error"]
     # loop through those games 
     #   add to possibleGames list if NOT an expansion
     #   ignore otherwise
@@ -44,6 +50,7 @@ def searchForGame(gameTitle):
                 # print("english!")
                 isEnglish = True
         if isEnglish and not isExpansion:
+            print(index)
             possibleGames.append(searchedGames[index])
     print(possibleGames)
     # display possibleGames to user as a numbered list format
@@ -52,8 +59,12 @@ def searchForGame(gameTitle):
             print(f"{i+1}: {game[1]}")
         # take user input - 1 bc zero index
         userSelection = int(input("Select with game you meant by inputing it's number: ")) - 1
+        while userSelection < 0 or userSelection > len(possibleGames) - 1:
+            userSelection = int(input("Please select a game within the range: ")) - 1
         # return game selected by user
         return possibleGames[userSelection]
+    elif len(possibleGames) == 0:
+        return ["Error"]
     else:
         return possibleGames[0]
 
@@ -77,18 +88,21 @@ def userPrompting():
     all_userratings = []
     input_game = None
     game_rating = None
-    done_notification = False
     print("Welcome to Cav's boardgames! You are now entering the Hypersphere of Trust, please share some boardgames your group has played and a rating 1-10 for each.")
     while True:
         input_game = None
         game_rating = None
-        if len(all_userboardgames) > 2 and not done_notification:
-            print("Thank you for your input! You may enter Done to finish your list")
-            done_notification=True
+        if len(all_userboardgames) == 2:
+            print("Thank you for your input! You may enter \"Done\" to finish your list")
         while input_game is None: #ensures user does not enter a duplicate board game
             input_game=input("Boardgame: ")
-            input_game=searchForGame(input_game)[0] #will need to implement searchForGame
-            for game in all_userboardgames:
+            if input_game == "Done":
+                break
+            input_game=searchForGame(input_game)[0] 
+            if input_game == "Error":
+                print("I'm sorry I don't recognize that game. Please provide a different game.")
+                input_game = None
+            for game in all_userboardgames: 
                 if game==input_game:
                     print("This boardgame is already recorded on our list. Please provide a different game.")
                     input_game = None
