@@ -23,7 +23,7 @@ def searchForGame(gameTitle):
         gameName = game.text.strip().split('\n')[0]
         searchedGames.append((gameID, gameName))
     # loop through those games 
-    #   add to possibleGames list if not an expansion
+    #   add to possibleGames list if NOT an expansion
     #   ignore otherwise
     # print(searchedGames, '\n\n')
     
@@ -75,8 +75,45 @@ print(searchForGame("spirit island"))
 #   pretty print a list
 #   let user let us know if they’ve played any of them and their ratings?
 
+def userPrompting():
+    all_userboardgames = []
+    all_userratings = []
+    input_game = None
+    game_rating = None
+    done_notification = False
+    print("Welcome to Cav's boardgames! You are now entering the Hypersphere of Trust, please share some boardgames your group has played and a rating 1-10 for each.")
+    while True:
+        input_game = None
+        game_rating = None
+        if len(all_userboardgames) > 2 and done_notification==False:
+            print("Thank you for your input! You may enter Done to finish your list")
+            done_notification=True
+        while input_game is None: #ensures user does not enter a duplicate board game
+            input_game=input("Boardgame: ")
+        #   input_game = searchForGame(input_game) #will need to implement searchForGame
+            for game in all_userboardgames:
+                if game==input_game:
+                    print("This boardgame is already recorded on our list. Please provide a different game.")
+                    input_game = None
+        if input_game == "Done":
+            break
+        while game_rating is None: #ensures the user gives a numerical value between 1 and 10
+            try:
+                game_rating=float(input("Group Rating: "))
+                while game_rating > 10 or game_rating < 1:
+                    print("Please provide a valid rating between 1-10")
+                    game_rating=float(input("Group Rating: "))
+            except ValueError:
+                print("Please provide a valid rating between 1-10")
+                game_rating = None
+        all_userboardgames.append(input_game)
+        all_userratings.append(game_rating)
+    print(all_userboardgames)
+    print(all_userratings)
+    return 0
+
 def main():
-    pass
+    userPrompting()
 
 'Standard python convention to have this'
 if __name__ == "__main__":
