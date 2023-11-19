@@ -1,3 +1,6 @@
+import requests as r
+import xmltodict
+from bs4 import BeautifulSoup
 # Pseudo code/Planning
 
 # Get user input of games they’ve played, ask for at least 3 maybe
@@ -9,27 +12,53 @@
 def searchForGame(gameTitle):
     # call the api search function on gameTitle
     # get a list of game id's returned probably
-    searchedGames = [] #change for api call instead
+    searchedGames = []
+    gamesSearch = BeautifulSoup(r.get(f'https://boardgamegeek.com/xmlapi/search?search={gameTitle}').content, 'xml')
+    # print(gamesSearch)
+    gameIDs = ""
+    for game in gamesSearch.find_all('boardgame'):
+        # print(game)
+        gameID = game['objectid']
+        gameIDs += gameID + ","
+        gameName = game.text.strip().split('\n')[0]
+        searchedGames.append((gameID, gameName))
     # loop through those games 
     #   add to possibleGames list if not an expansion
     #   ignore otherwise
+    # print(searchedGames, '\n\n')
+    
+    print(gameIDs)
+    gamesInformation = BeautifulSoup(r.get(f'https://boardgamegeek.com/xmlapi/boardgame/{gameIDs}').content, 'xml')
     possibleGames = []
-    for game in searchedGames:
-        boardgameCategoryID = "0000" #replace with api call for boardgamecategory id number
-        # may need to change this to a loop through the IDs because 
-        # boardgamecategory can be listed multiple times and we want to make sure none of them
-        # are 1024 for expansion
-        # may don't need loop and could just do if "1024" in boardgameCategoryIDs, maybe
-        if boardgameCategoryID == "1024":
-            possibleGames.append(game)
-
+    for index, contents in enumerate(gamesInformation.find_all('boardgame')):
+        boardgameCategories = contents.find_all('boardgamecategory')
+        isExpansion = False
+        for category in boardgameCategories:
+            if category['objectid'] == '1042':
+                # print("expansion!")
+                isExpansion = True
+        # print(game)
+        boardgameVersion = contents.find_all('boardgameversion')
+        isEnglish = False
+        for category in boardgameVersion:
+            if 'English' in category.text:
+                # print("english!")
+                isEnglish = True
+        if isEnglish and not isExpansion:
+            possibleGames.append(searchedGames[index])
+    print(possibleGames)
     # display possibleGames to user as a numbered list format
-    for i, game in enumerate(possibleGames):
-        print(f"{i+1}: {game}")
-    # take user input - 1 bc zero index
-    userSelection = int(input("Select with game you meant by inputing it's number")) - 1
-    # return game selected by user
-    return possibleGames[userSelection]
+    if len(possibleGames) > 1:
+        for i, game in enumerate(possibleGames):
+            print(f"{i+1}: {game[1]}")
+        # take user input - 1 bc zero index
+        userSelection = int(input("Select with game you meant by inputing it's number: ")) - 1
+        # return game selected by user
+        return possibleGames[userSelection]
+    else:
+        return possibleGames[0]
+
+print(searchForGame("spirit island"))
 
 # Black Box Recommending
 # gonna recommend games with similar factors for games user rating highly
