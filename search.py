@@ -36,8 +36,8 @@ def testfun(idS):
 
 
 def main():
-    searchString = "%20".join(input("Please enter a Board Game: ").split(" "))
-    #searchString = "%20".join("Crossbows and Catapults".split(" "))
+    #searchString = "%20".join(input("Please enter a Board Game: ").split(" "))
+    searchString = "%20".join("Crossbows and Catapults".split(" "))
     thisSearch = searchHTML.format(searchString)
     print(thisSearch)
     getNamesFromSearchURL(thisSearch)
