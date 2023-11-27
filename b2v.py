@@ -59,18 +59,46 @@ def board2vec(gameID):
             print('Issue with getting maxplaytime')
     
     try:
-        childrensGameRank = float(game.find('childrensgame_rank'))
+        childrensGameRank = float(game.find(friendlyname="Children's Game Rank").get('bayesaverage'))
     except:
         childrensGameRank = 0
         if debug:
             print('Issue with getting childrensgame_rank')
     
     try:
-        familyGameRank = float(game.find('familygame_rank'))
+        familyGameRank = float(game.find(friendlyname="Family Game Rank").get('bayesaverage'))
     except:
         familyGameRank = 0
         if debug:
             print('Issue with getting familygame_rank')
+
+    try:
+        partyGameRank = float(game.find(friendlyname="Party Game Rank").get('bayesaverage'))
+    except:
+        partyGameRank = 0
+        if debug:
+            print('Issue with getting partygames_rank')
+    
+    try:
+        strategyGameRank = float(game.find(friendlyname="Strategy Game Rank").get('bayesaverage'))
+    except:
+        strategyGameRank = 0
+        if debug:
+            print('Issue with getting strategygames_rank')
+    
+    try:
+        thematicGameRank = float(game.find(friendlyname="Thematic Rank").get('bayesaverage'))
+    except:
+        thematicGameRank = 0
+        if debug:
+            print('Issue with getting thematic_rank')
+    
+    try:
+        warGameRank = float(game.find(friendlyname="War Game Rank").get('bayesaverage'))
+    except:
+        warGameRank = 0
+        if debug:
+            print('Issue with getting wargames_rank')
     
     try:
         complexity = float(game.find('averageweight'))
@@ -93,7 +121,7 @@ def board2vec(gameID):
         if debug:
             print('Issue with getting yearpublished')
 
-    vec = [minPlayers, maxPlayers, minPlayTime, maxPlayTime, childrensGameRank, familyGameRank, complexity, age, yearPublished]
+    vec = [minPlayers, maxPlayers, minPlayTime, maxPlayTime, childrensGameRank, familyGameRank, partyGameRank, strategyGameRank, thematicGameRank, warGameRank, complexity, age, yearPublished]
 
     return (gameID, vec)
 
@@ -151,23 +179,29 @@ def sortCosSim(boardgamelist, usergames, groupRatings = [], n=10):
         
 
 def main():
-    ##Used to test my code
-    au = board2vec('14978')
-    bu = board2vec('12354')
-    cu = board2vec('2586')
-    du = board2vec('9831')
-    eu = board2vec('5677')
-    userGamesList = [au, bu, cu, du, eu]
-    a = board2vec('164928')
-    b = board2vec('12358')
-    c = board2vec('7895')
-    d = board2vec('78954')
-    e = board2vec('85321')
-    gameList = [a, b, c, d, e]
+    # Used to test my code
+    # au = board2vec('14978')
+    # bu = board2vec('12354')
+    # cu = board2vec('2586')
+    # du = board2vec('9831')
+    # eu = board2vec('5677')
+    # userGamesList = [au, bu, cu, du, eu]
+    # a = board2vec('164928')
+    # b = board2vec('12358')
+    # c = board2vec('7895')
+    # d = board2vec('78954')
+    # e = board2vec('85321')
+    # gameList = [a, b, c, d, e]
     
-    # Used to verify that the second value in the tuple is the closest in the list to the user ranked value
-    a = sortCosSim(gameList, userGamesList, [10,10,5,10,10])
-    print(a[2])
+    # # Used to verify that the second value in the tuple is the closest in the list to the user ranked value
+    # a = sortCosSim(gameList, userGamesList, [10,10,5,10,10])
+    # print(a[2])
+
+    # Used to test to make sure the correct averages are retrieved and put into the vector
+    print(board2vec('246900')) # strat
+    print(board2vec('268864')) # war
+    print(board2vec('171131')) # party & thematic
+    print(board2vec('91514'))  # children's & family
 
     pass
     
