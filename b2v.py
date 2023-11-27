@@ -3,7 +3,7 @@ import requests as r
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import normalize
 
-debug = True
+debug = False
 
 def board2vec(gameID):
     """
@@ -98,7 +98,7 @@ def board2vec(gameID):
     return (gameID, vec)
 
 
-def sortCosSim(boardgamelist, usergames, groupRatings, n=10):
+def sortCosSim(boardgamelist, usergames, groupRatings = [], n=10):
     """
     
     Description:
@@ -114,7 +114,10 @@ def sortCosSim(boardgamelist, usergames, groupRatings, n=10):
         top n are the top n lowest collective distance from every usergame
     
         
-    """    
+    """
+    if groupRatings == []:
+        groupRatings = [10 for i in range(len(usergames))]
+
     # Only get the vectors, and normalize them
     gameList = []
     for game in boardgamelist:
@@ -134,13 +137,16 @@ def sortCosSim(boardgamelist, usergames, groupRatings, n=10):
     # sort by desending order of the absoluted difference of the rating/10 and the cosine similarity
     for i in range(len(userGamesList)):
         mostSimilar = []
+        userRated = groupRatings[i] / 10.0
         cosineScores = dotProducts[i]
         for j in range(len(boardgamelist)):
-            mostSimilar.append((boardgamelist[j][0], cosineScores[j]))
+            mostSimilar.append((boardgamelist[j][0], abs(cosineScores[j] - userRated)))
 
         mostSimilar.sort(key=lambda x: x[1], reverse=True)
         toReturn.append(mostSimilar[:n])
     
+    # Return type is now gameid and relative similarity (relative in the sense it is with regard
+    # to how the user rated the game)
     return toReturn
         
 
@@ -158,7 +164,10 @@ def main():
     d = board2vec('78954')
     e = board2vec('85321')
     gameList = [a, b, c, d, e]
-    sortCosSim(gameList, userGamesList, [10,5,3,6,8])
+    
+    # Used to verify that the second value in the tuple is the closest in the list to the user ranked value
+    a = sortCosSim(gameList, userGamesList, [10,10,5,10,10])
+    print(a[2])
 
     pass
     
