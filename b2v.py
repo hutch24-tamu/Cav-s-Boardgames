@@ -26,18 +26,7 @@ def board2vec(gameID):
     outputs:
         returns a tuple where index 0 is the gameID and index 1 is the vectorized version of the game
     """
-    game = BeautifulSoup(r.get(f'https://boardgamegeek.com/xmlapi/boardgame/{gameID}').content, 'xml')
-    boardgameCategories = game.find_all('boardgamecategory')
-    isExpansion = False
-    for category in boardgameCategories:
-        if category['objectid'] == '1042':
-            isExpansion = True
-
-    # Return empty vector, indicating that something is wrong (expansion pack, not actual board game)
-    # might not be needed if we already do this validation elsewehere
-    if isExpansion:
-        return (gameID, [])
-
+    
     # Get information from the xml. All are in try-except because some have '' returned when trying 
     # to access the tree, so int('') creates an error
     try:
@@ -124,7 +113,6 @@ def sortCosSim(boardgamelist, usergames, n=10):
         mostSimilar.sort(key=lambda x: x[1], reverse=True)
         toReturn.append(mostSimilar[:n])
 
-    # TODO: Need to return the correct type. Thus far returns ('<id>', cosine)
     return toReturn
         
 
