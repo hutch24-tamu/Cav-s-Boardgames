@@ -3,6 +3,7 @@ import requests as r
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import normalize
 
+debug = True
 
 def board2vec(gameID):
     """
@@ -26,52 +27,78 @@ def board2vec(gameID):
     outputs:
         returns a tuple where index 0 is the gameID and index 1 is the vectorized version of the game
     """
-    game = BeautifulSoup(r.get(f'https://boardgamegeek.com/xmlapi/boardgame/{gameID}').content, 'xml')
+    game = BeautifulSoup(r.get(f'https://boardgamegeek.com/xmlapi/boardgame/{gameID}?stats=1').content, 'xml')
     # Get information from the xml. All are in try-except because some have '' returned when trying 
     # to access the tree, so int('') creates an error
     try:
         minPlayers = int(game.find('minplayers').text)
     except:
         minPlayers = 0
+        if debug:
+            print('Issue with getting minplayers')
+    
     try:
         maxPlayers = int(game.find('maxplayers').text)
     except:
         maxPlayers = 0
+        if debug:
+            print('Issue with getting maxplayers')
+    
     try:
         minPlayTime = int(game.find('minplaytime').text)
     except:
         minPlayTime = 0
+        if debug:
+            print('Issue with getting minplaytime')
+    
     try:
         maxPlayTime = int(game.find('maxplaytime').text)
     except:
         maxPlayTime = 0
+        if debug:
+            print('Issue with getting maxplaytime')
+    
     try:
         childrensGameRank = float(game.find('childrensgame_rank'))
     except:
         childrensGameRank = 0
+        if debug:
+            print('Issue with getting childrensgame_rank')
+    
     try:
         familyGameRank = float(game.find('familygame_rank'))
     except:
         familyGameRank = 0
+        if debug:
+            print('Issue with getting familygame_rank')
+    
     try:
-        averageWeight = float(game.find('averageweight'))
+        complexity = float(game.find('averageweight'))
     except:
-        averageWeight = 0
+        complexity = 0
+        if debug:
+            print('Issue with getting averageweight (complexity)')
+    
     try:
         age = int(game.find('age').text)
     except:
         age = 0
+        if debug:
+            print('Issue with getting age')
+    
     try:
         yearPublished = int(game.find('yearpublished').text)
     except:
         yearPublished = 0
+        if debug:
+            print('Issue with getting yearpublished')
 
-    vec = [minPlayers, maxPlayers, minPlayTime, maxPlayTime, childrensGameRank, familyGameRank, averageWeight, age, yearPublished]
+    vec = [minPlayers, maxPlayers, minPlayTime, maxPlayTime, childrensGameRank, familyGameRank, complexity, age, yearPublished]
 
     return (gameID, vec)
 
 
-def sortCosSim(boardgamelist, usergames, n=10):
+def sortCosSim(boardgamelist, usergames, groupRatings, n=10):
     """
     
     Description:
@@ -87,7 +114,7 @@ def sortCosSim(boardgamelist, usergames, n=10):
         top n are the top n lowest collective distance from every usergame
     
         
-    """
+    """    
     # Only get the vectors, and normalize them
     gameList = []
     for game in boardgamelist:
@@ -103,7 +130,8 @@ def sortCosSim(boardgamelist, usergames, n=10):
     dotProducts = cosine_similarity(userGamesList, gameList)
 
     toReturn = []
-
+    # sort by boardgames closest to cosine similarity = grouprating / 10 
+    # sort by desending order of the absoluted difference of the rating/10 and the cosine similarity
     for i in range(len(userGamesList)):
         mostSimilar = []
         cosineScores = dotProducts[i]
@@ -112,25 +140,25 @@ def sortCosSim(boardgamelist, usergames, n=10):
 
         mostSimilar.sort(key=lambda x: x[1], reverse=True)
         toReturn.append(mostSimilar[:n])
-
+    
     return toReturn
         
 
 def main():
-    # Used to test my code
-    # au = board2vec('14978')
-    # bu = board2vec('12354')
-    # cu = board2vec('2586')
-    # du = board2vec('9831')
-    # eu = board2vec('5677')
-    # userGamesList = [au, bu, cu, du, eu]
-    # a = board2vec('164928')
-    # b = board2vec('12358')
-    # c = board2vec('7895')
-    # d = board2vec('78954')
-    # e = board2vec('85321')
-    # gameList = [a, b, c, d, e]
-    # sortCosSim(gameList, userGamesList)
+    ##Used to test my code
+    au = board2vec('14978')
+    bu = board2vec('12354')
+    cu = board2vec('2586')
+    du = board2vec('9831')
+    eu = board2vec('5677')
+    userGamesList = [au, bu, cu, du, eu]
+    a = board2vec('164928')
+    b = board2vec('12358')
+    c = board2vec('7895')
+    d = board2vec('78954')
+    e = board2vec('85321')
+    gameList = [a, b, c, d, e]
+    sortCosSim(gameList, userGamesList, [10,5,3,6,8])
 
     pass
     
