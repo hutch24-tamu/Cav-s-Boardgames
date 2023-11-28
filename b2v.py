@@ -101,7 +101,7 @@ def board2vec(gameID):
             print('Issue with getting wargames_rank')
     
     try:
-        complexity = float(game.find('averageweight'))
+        complexity = float(game.find('averageweight').text)
     except:
         complexity = 0
         if debug:
@@ -204,8 +204,6 @@ def main():
     print(board2vec('91514'))  # children's & family
 
     pass
-    
-
     
 if __name__ == "__main__":
     main()

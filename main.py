@@ -1,5 +1,6 @@
 import requests as r
 from bs4 import BeautifulSoup
+from b2v import board2vec, sortCosSim
 # GLOBALS
 NumberOfBoardgamesToSearch = 4
 
@@ -67,53 +68,63 @@ def searchForGame(gameTitle):
     else:
         return possibleGames[0]
 
-# output top 10 games we’d think they like
-#   pretty print a list
-#   let user let us know if they’ve played any of them and their ratings?
-
 def userPrompting():
-    all_userboardgames = []
-    all_userratings = []
-    input_game = None
-    game_rating = None
+    allUserBoardGames = []
+    allUserRatings = []
+    inputGame = None
+    gameRating = None
     print("Welcome to Cav's boardgames! You are now entering the Hypersphere of Trust, please share some boardgames your group has played and a rating 1-10 for each.")
     while True:
-        input_game = None
-        game_rating = None
-        if len(all_userboardgames) == 2:
+        inputGame = None
+        gameRating = None
+        if len(allUserBoardGames) == 2:
             print("Thank you for your input! You may enter \"Done\" to finish your list")
-        while input_game is None: #ensures user does not enter a duplicate board game
-            input_game=input("Boardgame: ")
-            if input_game == "Done":
+        while inputGame is None: #ensures user does not enter a duplicate board game
+            inputGame=input("Boardgame: ")
+            if inputGame == "Done":
                 break
-            input_game=searchForGame(input_game)[0] 
-            if input_game == "Error":
+            inputGame=searchForGame(inputGame)[0] 
+            if inputGame == "Error":
                 print("I'm sorry I don't recognize that game. Please provide a different game.")
-                input_game = None
-            for game in all_userboardgames: 
-                if game==input_game:
+                inputGame = None
+            for game in allUserBoardGames: 
+                if game==inputGame:
                     print("This boardgame is already recorded on our list. Please provide a different game.")
-                    input_game = None
-        if input_game == "Done":
+                    inputGame = None
+        if inputGame == "Done":
             break
-        while game_rating is None: #ensures the user gives a numerical value between 1 and 10
+        while gameRating is None: #ensures the user gives a numerical value between 1 and 10
             try:
-                game_rating=float(input("Group Rating: "))
-                while game_rating > 10 or game_rating < 1:
+                gameRating=float(input("Group Rating: "))
+                while gameRating > 10 or gameRating < 1:
                     print("Please provide a valid rating between 1-10")
-                    game_rating=float(input("Group Rating: "))
+                    gameRating=float(input("Group Rating: "))
             except ValueError:
                 print("Please provide a valid rating between 1-10")
-                game_rating = None
-        all_userboardgames.append(input_game)
-        all_userratings.append(game_rating)
-    print(all_userboardgames)
-    print(all_userratings)
-    return 0
+                gameRating = None
+        allUserBoardGames.append(inputGame)
+        allUserRatings.append(gameRating)
+    return (allUserBoardGames, allUserRatings)
+
+# output top 10 games we’d think they like
+#   pretty print a list
 
 def main():
-    userPrompting()
+    userGames, groupRatings = userPrompting()
+    userGamesVectorized = []
+    allGamesVectorized = []
+    for game in userGames:
+        userGamesVectorized.append(board2vec(game))
 
+    #The following does not work in the current state, as filteredgames_ranks.csv does not exist
+    with open('filteredgames_ranks.csv', encoding="utf8") as f:
+        for row in f:
+            gameID = row.split(",")[0]
+            allGamesVectorized.append(board2vec(gameID))  
+    recommendedGames = sortCosSim(allGamesVectorized,userGamesVectorized,groupRatings)
+    print("Based on your provided games, here are some games we recommend:", recommendedGames)
+    #done
+    pass
 'Standard python convention to have this'
 if __name__ == "__main__":
     main()
