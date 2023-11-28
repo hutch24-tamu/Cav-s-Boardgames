@@ -2,8 +2,8 @@ import csv
 import requests as r
 from bs4 import BeautifulSoup
 
-#   The purpose of this file is to create filteredgames_ranks.csv
-#   filteredgames_ranks should be boardgames_ranks without the header or all invalid games (expansion and non-English games)
+#   The purpose of this file is to create filteredgames_ids.csv
+#   filteredgames_ids should contain the game ids of valid games (expansion and non-English games)
 #   creating this file beforehand should make creating every vector a bit faster
 
 #First step is gathering every boardgameid from boardgames_ranks.csv
@@ -36,18 +36,19 @@ for game in candidateGameIDs:
      #       print("Made it to 50000")
 #print(len(possibleGames))
 
+#NO LONGER USED (only gameIDs will be of use for using the board2vec function)
 #Third step returns back to boardgames_ranks and acquire all information about valid boardgames
-possibleGamesQuick = set(possibleGames) #referencing a set will make this less painful 
-possibleGamesInformation = []
-with open('boardgames_ranks.csv', encoding="utf8") as g:
-    next(g)
-    for row in g: #Will keep each row with games that are valid (English and nonexpansion)
-        gameID = row.split(",")[0]
-        if gameID in possibleGamesQuick:
-            possibleGamesInformation.append(row)
-    g.close()
+#possibleGamesQuick = set(possibleGames) #referencing a set will make this less painful 
+#possibleGamesInformation = []
+#with open('boardgames_ranks.csv', encoding="utf8") as g:
+#    next(g)
+#    for row in g: #Will keep each row with games that are valid (English and nonexpansion)
+#        gameID = row.split(",")[0]
+#        if gameID in possibleGamesQuick:
+#            possibleGamesInformation.append(row)
+#    g.close()
 
-#Final step is to create the new file will the information about the valid boardgames to be used for vectors
-with open('filteredgames_ranks.csv', 'x', encoding='utf8') as w:
+#Final step is to create the new file which will only contain valid gameIDs
+with open('filteredgames_ids.csv', 'x', encoding='utf8') as w:
     write = csv.writer(w)
-    write.writerows(possibleGamesInformation)
+    write.writerows(possibleGames)

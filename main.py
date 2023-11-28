@@ -117,10 +117,9 @@ def main():
         userGamesVectorized.append(board2vec(game))
 
     #The following does not work in the current state, as filteredgames_ranks.csv does not exist
-    with open('filteredgames_ranks.csv', encoding="utf8") as f:
+    with open('filteredgames_ids.csv', encoding="utf8") as f:
         for row in f:
-            gameID = row.split(",")[0]
-            allGamesVectorized.append(board2vec(gameID))  
+            allGamesVectorized.append(board2vec(row))  
     recommendedGames = sortCosSim(allGamesVectorized,userGamesVectorized,groupRatings)
     print("Based on your provided games, here are some games we recommend:", recommendedGames)
     #done
