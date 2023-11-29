@@ -1,7 +1,8 @@
 import csv
 import requests as r
 from bs4 import BeautifulSoup
-
+from time import time
+startTime = time()
 #   The purpose of this file is to create filteredgames_ids.csv
 #   filteredgames_ids should contain the game ids of valid games (expansion and non-English games)
 #   creating this file beforehand should make creating every vector a bit faster
@@ -16,19 +17,35 @@ with open('boardgames_ranks.csv', encoding="utf8") as f:
 
 #Second step is filtering the gamelist by removing all invalid games (very similar to searchForGame)
 possibleGames = []
+numCanidates = len(candidateGameIDs)
+print(numCanidates)
+gamesStart = time()
+print("Time since start",gamesStart-startTime)
+i = 0
+lastTime = time()
 for game in candidateGameIDs:
-    gameInformation = BeautifulSoup(r.get(f'https://boardgamegeek.com/xmlapi/boardgame/{game}').content, 'xml')
+    i+=1
+    if i%1000 == 0:
+        print(f"Time from {i-1000} to {i}", time()-lastTime)
+        lastTime = time()
+    #gameInformation = BeautifulSoup(r.get(f'https://boardgamegeek.com/xmlapi/boardgame/{game}').content, 'xml')
+    file = open(f"./xmls/{game}.xml","r",encoding="utf8")
+    gameInformation = BeautifulSoup(file, 'xml')
     boardgameCategories = gameInformation.find_all('boardgamecategory')
     isExpansion = False
     for category in boardgameCategories:
         if category['objectid'] == '1042':
             isExpansion = True
+            break
+    if isExpansion:
+        continue
     boardgameVersion = gameInformation.find_all('boardgameversion')
     isEnglish = False
     for category in boardgameVersion:
         if 'English' in category.text:
             isEnglish = True
-    if isEnglish and not isExpansion:
+            break
+    if isEnglish:
         possibleGames.append(game)
      #   if len(possibleGames) == 10000:
      #       print("Made it to 10000")
@@ -52,3 +69,4 @@ for game in candidateGameIDs:
 with open('filteredgames_ids.csv', 'x', encoding='utf8') as w:
     write = csv.writer(w)
     write.writerows(possibleGames)
+endTime = time()
