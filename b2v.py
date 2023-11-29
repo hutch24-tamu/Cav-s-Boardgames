@@ -27,7 +27,10 @@ def board2vec(gameID):
     outputs:
         returns a tuple where index 0 is the gameID and index 1 is the vectorized version of the game
     """
-    game = BeautifulSoup(r.get(f'https://boardgamegeek.com/xmlapi/boardgame/{gameID}?stats=1').content, 'xml')
+    #game = BeautifulSoup(r.get(f'https://boardgamegeek.com/xmlapi/boardgame/{gameID}?stats=1').content, 'xml')
+    gameID = gameID.replace("\n","").replace(",","")
+    file = open(f"./xmls/{gameID[:]}.xml","r",encoding="utf8")
+    game = BeautifulSoup(file, 'xml')
     # Get information from the xml. All are in try-except because some have '' returned when trying 
     # to access the tree, so int('') creates an error
     try:

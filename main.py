@@ -110,20 +110,26 @@ def userPrompting():
 #   pretty print a list
 
 def main():
-    userGames, groupRatings = userPrompting()
-    userGamesVectorized = []
-    allGamesVectorized = []
-    for game in userGames:
-        userGamesVectorized.append(board2vec(game))
+    #userGames, groupRatings = userPrompting()
+    # userGamesVectorized = []
+    # allGamesVectorized = []
+    # for game in userGames:
+    #     userGamesVectorized.append(board2vec(game))
 
     #The following does not work in the current state, as filteredgames_ranks.csv does not exist
     with open('filteredgames_ids.csv', encoding="utf8") as f:
-        for row in f:
-            allGamesVectorized.append(board2vec(row))  
-    recommendedGames = sortCosSim(allGamesVectorized,userGamesVectorized,groupRatings)
-    print("Based on your provided games, here are some games we recommend:", recommendedGames)
+        with open('vectors2.csv', "w", encoding="utf8") as g:
+            for row in f:
+                gameID, vec = board2vec(row)
+                writeStr = str(gameID)+"," + ",".join([str(i) for i in vec]) + "\n"
+                #print(writeStr)
+                g.write(writeStr)
+
+                # allGamesVectorized.append()  
+    #recommendedGames = sortCosSim(allGamesVectorized,userGamesVectorized,groupRatings)
+    #print("Based on your provided games, here are some games we recommend:", recommendedGames)
     #done
-    pass
-'Standard python convention to have this'
+    
+
 if __name__ == "__main__":
     main()
