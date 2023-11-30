@@ -1,6 +1,7 @@
 import requests as r
 from bs4 import BeautifulSoup
 from b2v import board2vec, sortCosSim
+from lib3api import setupDicts, idToName, nameToId
 
 # GLOBALS
 NumberOfBoardgamesToSearch = 4
@@ -116,13 +117,17 @@ def main():
     allGamesVectorized = []
     boardGamesIDs = []
     for game in userGames:
-        userGamesVectorized.append(board2vec(game))
+        userGamesVectorized.append(board2vec(game)[1])
     #print(userGamesVectorized)
     with open('vectors.csv', encoding="utf8") as f:
         for row in f:
             boardGamesIDs.append(row.split(",")[0]) #the gameids for reference
-            allGamesVectorized.append(row.split(",")[1:]) #the values for comparison   
-    recommendedGames = sortCosSim(allGamesVectorized, boardGamesIDs, userGamesVectorized, groupRatings)          
+            allGamesVectorized.append([float(i) for i in row.split(",")[1:]]) #the values for comparison   
+    recommendedGames = sortCosSim(allGamesVectorized, boardGamesIDs, userGamesVectorized, groupRatings)  
+
+    for i in range(len(recommendedGames)):
+        recommendedGames[i] = idToName[int(recommendedGames[i][0])]
+
     print("Based on your provided games, here are some games we recommend:", recommendedGames)
     #done
     

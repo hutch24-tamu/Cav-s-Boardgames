@@ -149,38 +149,25 @@ def sortCosSim(boardgamelist, boardgameIDs, usergames, groupRatings = [], n=10):
     if groupRatings == []:
         groupRatings = [10 for i in range(len(usergames))]
 
-    # Only get the vectors, and normalize them
-   # gameList = []
-   # for game in boardgamelist: #This is a 1D array as we have vectors.csv, bypassing using board2vec live
-   #     gameList.append(normalize(game))
-
-    # Only get the vectors, and normalize them
-    # userGamesList = []
-    # for game in usergames:
-    #    userGamesList.append(normalize([game[1]])[0])
-
-    
     # [i][j] index in cos sim matrix is a dot product of the ith column, jth row
-    dotProducts = []
     #if boardgameIDs[j]!=usergames[i][0]: #Need to implement a way to ignore self-comparisons
-    dotProducts.append(cosine_similarity(boardgamelist, usergames))
+    dotProducts = cosine_similarity(boardgamelist, usergames)
 
-    toReturn = []
-    # sort by boardgames closest to cosine similarity = grouprating / 10 
-    # sort by desending order of the absoluted difference of the rating/10 and the cosine similarity
-    for i in range(len(usergames)):
-        mostSimilar = []
-        userRated = groupRatings[i] / 10.0
+    similarityScores = []
+    for i in range(len(boardgamelist)):
         cosineScores = dotProducts[i]
-        for j in range(len(boardgamelist)):
-            mostSimilar.append((boardgameIDs[j], abs(cosineScores[j] - userRated)))
+        relativeSimScoreSum = 0
 
-        mostSimilar.sort(key=lambda x: x[1], reverse=True)
-        toReturn.append(mostSimilar[:n])
+        for j in range(len(usergames)):
+            userRated = groupRatings[j] / 10.0
+            relativeSimScoreSum += abs(cosineScores[j] - userRated)
+
+        similarityScores.append((boardgameIDs[i], relativeSimScoreSum))
+
+    similarityScores.sort(key=lambda x: x[1])
     
-    # Return type is now gameid and relative similarity (relative in the sense it is with regard
-    # to how the user rated the game)
-    return toReturn
+    # Return type is (gameID, summed relative sim score)
+    return similarityScores[:n]
         
 
 def main():
