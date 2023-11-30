@@ -114,16 +114,18 @@ def userPrompting():
 def main():
     userGames, groupRatings = userPrompting()
     userGamesVectorized = []
+    userGamesIDs = []
     allGamesVectorized = []
     boardGamesIDs = []
     for game in userGames:
+        userGamesIDs.append(board2vec(game)[0])
         userGamesVectorized.append(board2vec(game)[1])
     #print(userGamesVectorized)
     with open('vectors.csv', encoding="utf8") as f:
         for row in f:
             boardGamesIDs.append(row.split(",")[0]) #the gameids for reference
             allGamesVectorized.append([float(i) for i in row.split(",")[1:]]) #the values for comparison   
-    recommendedGames = sortCosSim(allGamesVectorized, boardGamesIDs, userGamesVectorized, groupRatings)  
+    recommendedGames = sortCosSim(allGamesVectorized, boardGamesIDs, userGamesVectorized, userGamesIDs, groupRatings)  
 
     for i in range(len(recommendedGames)):
         recommendedGames[i] = idToName[int(recommendedGames[i][0])]

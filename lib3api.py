@@ -86,4 +86,5 @@ setupDicts()
 if __name__ == "__main__":
     main()
 f = time()
-print("Time passed:", f-s)
+pass
+#print("Time passed:", f-s)

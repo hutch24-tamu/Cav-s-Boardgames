@@ -129,7 +129,7 @@ def board2vec(gameID):
     return (gameID, vec)
 
 
-def sortCosSim(boardgamelist, boardgameIDs, usergames, groupRatings = [], n=10):
+def sortCosSim(boardgamelist, boardgameIDs, usergames, usergameIDs, groupRatings = [], n=10):
     """
     
     Description:
@@ -157,13 +157,12 @@ def sortCosSim(boardgamelist, boardgameIDs, usergames, groupRatings = [], n=10):
     for i in range(len(boardgamelist)):
         cosineScores = dotProducts[i]
         relativeSimScoreSum = 0
+        if boardgameIDs[i] not in usergameIDs:
+            for j in range(len(usergames)):
+                userRated = groupRatings[j] / 10.0
+                relativeSimScoreSum += abs(cosineScores[j] - userRated)
 
-        for j in range(len(usergames)):
-            userRated = groupRatings[j] / 10.0
-            relativeSimScoreSum += abs(cosineScores[j] - userRated)
-
-        similarityScores.append((boardgameIDs[i], relativeSimScoreSum))
-
+            similarityScores.append((boardgameIDs[i], relativeSimScoreSum))
     similarityScores.sort(key=lambda x: x[1])
     
     # Return type is (gameID, summed relative sim score)
