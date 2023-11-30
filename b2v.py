@@ -27,10 +27,10 @@ def board2vec(gameID):
     outputs:
         returns a tuple where index 0 is the gameID and index 1 is the vectorized version of the game
     """
-    #game = BeautifulSoup(r.get(f'https://boardgamegeek.com/xmlapi/boardgame/{gameID}?stats=1').content, 'xml')
+    game = BeautifulSoup(r.get(f'https://boardgamegeek.com/xmlapi/boardgame/{gameID}?stats=1').content, 'xml')
     gameID = gameID.replace("\n","").replace(",","")
-    file = open(f"./xmls/{gameID[:]}.xml","r",encoding="utf8")
-    game = BeautifulSoup(file, 'xml')
+    #file = open(f"./xmls/{gameID[:]}.xml","r",encoding="utf8")
+    #game = BeautifulSoup(file, 'xml')
     # Get information from the xml. All are in try-except because some have '' returned when trying 
     # to access the tree, so int('') creates an error
     try:
@@ -129,7 +129,7 @@ def board2vec(gameID):
     return (gameID, vec)
 
 
-def sortCosSim(boardgamelist, usergames, groupRatings = [], n=10):
+def sortCosSim(boardgamelist, boardgameIDs, usergames, groupRatings = [], n=10):
     """
     
     Description:
@@ -150,28 +150,32 @@ def sortCosSim(boardgamelist, usergames, groupRatings = [], n=10):
         groupRatings = [10 for i in range(len(usergames))]
 
     # Only get the vectors, and normalize them
-    gameList = []
-    for game in boardgamelist:
-        gameList.append(normalize([game[1]])[0])
+   # gameList = []
+   # for game in boardgamelist: #This is a 1D array as we have vectors.csv, bypassing using board2vec live
+   #     gameList.append(normalize(game))
 
     # Only get the vectors, and normalize them
-    userGamesList = []
-    for game in usergames:
-        userGamesList.append(normalize([game[1]])[0])
+    # userGamesList = []
+    # for game in usergames:
+    #    userGamesList.append(normalize([game[1]])[0])
 
     
     # [i][j] index in cos sim matrix is a dot product of the ith column, jth row
-    dotProducts = cosine_similarity(userGamesList, gameList)
+    dotProducts = []
+    for i in range(len(usergames)):
+        for j in range((len(boardgamelist))):
+            if boardgameIDs[j]!=usergames[i][0]: #Avoid comparing a game to itself
+                dotProducts.append(cosine_similarity(boardgamelist[j], usergames[i]))
 
     toReturn = []
     # sort by boardgames closest to cosine similarity = grouprating / 10 
     # sort by desending order of the absoluted difference of the rating/10 and the cosine similarity
-    for i in range(len(userGamesList)):
+    for i in range(len(usergames)):
         mostSimilar = []
         userRated = groupRatings[i] / 10.0
         cosineScores = dotProducts[i]
         for j in range(len(boardgamelist)):
-            mostSimilar.append((boardgamelist[j][0], abs(cosineScores[j] - userRated)))
+            mostSimilar.append((boardgameIDs[j], abs(cosineScores[j] - userRated)))
 
         mostSimilar.sort(key=lambda x: x[1], reverse=True)
         toReturn.append(mostSimilar[:n])

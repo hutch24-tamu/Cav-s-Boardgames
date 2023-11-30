@@ -1,6 +1,7 @@
 import requests as r
 from bs4 import BeautifulSoup
 from b2v import board2vec, sortCosSim
+
 # GLOBALS
 NumberOfBoardgamesToSearch = 4
 
@@ -110,24 +111,19 @@ def userPrompting():
 #   pretty print a list
 
 def main():
-    #userGames, groupRatings = userPrompting()
-    # userGamesVectorized = []
-    # allGamesVectorized = []
-    # for game in userGames:
-    #     userGamesVectorized.append(board2vec(game))
-
-    #The following does not work in the current state, as filteredgames_ranks.csv does not exist
-    with open('filteredgames_ids.csv', encoding="utf8") as f:
-        with open('vectors2.csv', "w", encoding="utf8") as g:
-            for row in f:
-                gameID, vec = board2vec(row)
-                writeStr = str(gameID)+"," + ",".join([str(i) for i in vec]) + "\n"
-                #print(writeStr)
-                g.write(writeStr)
-
-                # allGamesVectorized.append()  
-    #recommendedGames = sortCosSim(allGamesVectorized,userGamesVectorized,groupRatings)
-    #print("Based on your provided games, here are some games we recommend:", recommendedGames)
+    userGames, groupRatings = userPrompting()
+    userGamesVectorized = []
+    allGamesVectorized = []
+    boardGamesIDs = []
+    for game in userGames:
+        userGamesVectorized.append(board2vec(game))
+    #print(userGamesVectorized)
+    with open('vectors.csv', encoding="utf8") as f:
+        for row in f:
+            boardGamesIDs.append(row.split(",")[0]) #the gameids for reference
+            allGamesVectorized.append(row.split(",")[1:]) #the values for comparison   
+    recommendedGames = sortCosSim(allGamesVectorized, boardGamesIDs, userGamesVectorized, groupRatings)          
+    print("Based on your provided games, here are some games we recommend:", recommendedGames)
     #done
     
 
