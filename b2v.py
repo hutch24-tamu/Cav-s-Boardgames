@@ -162,10 +162,8 @@ def sortCosSim(boardgamelist, boardgameIDs, usergames, groupRatings = [], n=10):
     
     # [i][j] index in cos sim matrix is a dot product of the ith column, jth row
     dotProducts = []
-    for i in range(len(usergames)):
-        for j in range((len(boardgamelist))):
-            if boardgameIDs[j]!=usergames[i][0]: #Avoid comparing a game to itself
-                dotProducts.append(cosine_similarity(boardgamelist[j], usergames[i]))
+    #if boardgameIDs[j]!=usergames[i][0]: #Need to implement a way to ignore self-comparisons
+    dotProducts.append(cosine_similarity(boardgamelist, usergames))
 
     toReturn = []
     # sort by boardgames closest to cosine similarity = grouprating / 10 
