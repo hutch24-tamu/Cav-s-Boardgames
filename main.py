@@ -82,7 +82,7 @@ def userPrompting():
         if len(allUserBoardGames) == 2:
             print("Thank you for your input! You may enter \"Done\" to finish your list")
         while inputGame is None: #ensures user does not enter a duplicate board game
-            inputGame=input("Boardgame: ")
+            inputGame=input("\nBoardgame: ")
             if inputGame == "Done":
                 break
             inputGame=searchForGame(inputGame)[0] 
@@ -130,7 +130,9 @@ def main():
     for i in range(len(recommendedGames)):
         recommendedGames[i] = idToName[int(recommendedGames[i][0])]
 
-    print("Based on your provided games, here are some games we recommend:", recommendedGames)
+    print("\nBased on your provided games, here are some games we recommend:")
+    for i, game in enumerate(recommendedGames):
+        print(f"{i+1}: {game}")
     #done
     
 
