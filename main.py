@@ -117,6 +117,7 @@ def main():
     userGamesIDs = []
     allGamesVectorized = []
     boardGamesIDs = []
+    recommendedGamesIDs = []
     for game in userGames:
         userGamesIDs.append(board2vec(game)[0])
         userGamesVectorized.append(board2vec(game)[1])
@@ -128,11 +129,13 @@ def main():
     recommendedGames = sortCosSim(allGamesVectorized, boardGamesIDs, userGamesVectorized, userGamesIDs, groupRatings)  
 
     for i in range(len(recommendedGames)):
+        recommendedGamesIDs.append(int(recommendedGames[i][0]))
         recommendedGames[i] = idToName[int(recommendedGames[i][0])]
 
     print("\nBased on your provided games, here are some games we recommend:")
     for i, game in enumerate(recommendedGames):
         print(f"{i+1}: {game}")
+        print(f"https://boardgamegeek.com/boardgame/{recommendedGamesIDs[i]}\n")
     #done
     
 
